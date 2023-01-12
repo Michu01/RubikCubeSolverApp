@@ -37,11 +37,19 @@ namespace RubikCubeSolverApp.Models
 
         public Piece BottomRightPiece => GetPiece(PieceType.BottomRight);
 
+        public Piece[] EdgePieces => new[] { TopPiece, RightPiece, BottomPiece, LeftPiece };
+
+        public Piece[] CornerPieces => new[] { TopLeftPiece, TopRightPiece, BottomRightPiece, BottomLeftPiece };
+
         public Face()
         {
             foreach (int n in Enumerable.Range(0, PieceCount))
             {
-                Pieces.Add(new() { ColorType = (ColorType)Type, Type = (PieceType)n });
+                Pieces.Add(new() 
+                { 
+                    ColorType = (ColorType)Type, 
+                    Type = (PieceType)n 
+                });
             }
         }
 

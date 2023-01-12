@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -97,12 +99,15 @@ namespace RubikCubeSolverApp.ViewModels
             }
 
             rubikCube.FacePieceChanged += RubikCube_ColorTypeChanged;
-            rubikCube.FaceChanged += RubikCube_FaceChanged;
 
             RandomCommand = new RelayCommand(rubikCube.Randomize);
             ResetCommand = new RelayCommand(rubikCube.Reset);
             UndoCommand = new RelayCommand(rubikCube.Undo);
-            SolveCommand = new RelayCommand(() => rubikSolver.Solve(rubikCube));
+            SolveCommand = new RelayCommand(() =>
+            {
+                List<OperationType> operations = rubikSolver.Solve(rubikCube);
+                Debug.WriteLine($"{operations.Count} operations: " + string.Join(',', operations));
+            });
             StepCommand = new RelayCommand(() =>
             {
                 if (stepSolve?.IsCompleted ?? false)
@@ -159,14 +164,6 @@ namespace RubikCubeSolverApp.ViewModels
             while (await periodicTimer.WaitForNextTickAsync())
             {
 
-            }
-        }
-
-        private void RubikCube_FaceChanged(Face face)
-        {
-            foreach (Piece piece in face.Pieces)
-            {
-                RubikCube_ColorTypeChanged(face, piece);
             }
         }
 

@@ -5,12 +5,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using RubikCubeSolverApp.Enums;
 using RubikCubeSolverApp.Models;
 
 namespace RubikCubeSolverApp.Services
 {
     internal interface IRubikCubeSolver
     {
-        void Solve(RubikCube cube, AutoResetEvent? resumeEvent = null);
+        List<OperationType> Solve(RubikCube cube, AutoResetEvent? resumeEvent = null);
     }
 }

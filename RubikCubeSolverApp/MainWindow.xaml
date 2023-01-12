@@ -5,6 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RubikCubeSolverApp"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="740">
+        Title="MainWindow" Height="740" Width="740">
     <local:MainView/>
 </Window>

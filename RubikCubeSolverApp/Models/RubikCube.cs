@@ -16,8 +16,6 @@ namespace RubikCubeSolverApp.Models
 
         public event Action<Face, Piece>? FacePieceChanged;
 
-        public event Action<Face>? FaceChanged;
-
         private readonly Action[] operations;
 
         private readonly Face[] faces = new Face[FaceCount];
@@ -35,6 +33,64 @@ namespace RubikCubeSolverApp.Models
         public Face FrontFace => GetFace(FaceType.Front);
 
         public Face BackFace => GetFace(FaceType.Back);
+
+        public Face[] XAxisFaces => new[] { TopFace, BackFace, BottomFace, FrontFace };
+
+        public Face[] YAxisFaces => new[] { FrontFace, LeftFace, BackFace, RightFace };
+
+        public Face[] ZAxisFaces => new[] { TopFace, RightFace, BottomFace, LeftFace };
+
+        public Middle FrontMiddle => new() { Piece = FrontFace.MiddlePiece };
+
+        public Middle BackMiddle => new() { Piece = BackFace.MiddlePiece };
+
+        public Middle TopMiddle => new() { Piece = TopFace.MiddlePiece };
+
+        public Middle BottomMiddle => new() { Piece = BottomFace.MiddlePiece };
+
+        public Middle LeftMiddle => new() { Piece = LeftFace.MiddlePiece };
+
+        public Middle RightMiddle => new() { Piece = RightFace.MiddlePiece };
+
+        public Edge FrontLeftEdge => new() { FirstPiece = FrontFace.LeftPiece, SecondPiece = LeftFace.RightPiece };
+
+        public Edge FrontRightEdge => new() { FirstPiece = FrontFace.RightPiece, SecondPiece = RightFace.LeftPiece };
+
+        public Edge FrontTopEdge => new() { FirstPiece = FrontFace.TopPiece, SecondPiece = TopFace.BottomPiece };
+
+        public Edge FrontBottomEdge => new() { FirstPiece = FrontFace.BottomPiece, SecondPiece = BottomFace.TopPiece };
+
+        public Edge BackLeftEdge => new() { FirstPiece = BackFace.LeftPiece, SecondPiece = RightFace.RightPiece };
+
+        public Edge BackRightEdge => new() { FirstPiece = BackFace.RightPiece, SecondPiece = LeftFace.LeftPiece };
+
+        public Edge BackTopEdge => new() { FirstPiece = BackFace.TopPiece, SecondPiece = TopFace.TopPiece };
+
+        public Edge BackBottomEdge => new() { FirstPiece = BackFace.BottomPiece, SecondPiece = BottomFace.BottomPiece };
+
+        public Edge TopLeftEdge => new() { FirstPiece = TopFace.LeftPiece, SecondPiece = LeftFace.TopPiece };
+
+        public Edge TopRightEdge => new() { FirstPiece = TopFace.RightPiece, SecondPiece = RightFace.TopPiece };
+
+        public Edge BottomLeftEdge => new() { FirstPiece = BottomFace.LeftPiece, SecondPiece = LeftFace.BottomPiece };
+
+        public Edge BottomRightEdge => new() { FirstPiece = BottomFace.RightPiece, SecondPiece = RightFace.BottomPiece };
+
+        public Corner FrontTopLeftCorner => new() { FirstPiece = FrontFace.TopLeftPiece, SecondPiece = TopFace.BottomLeftPiece, ThirdPiece = LeftFace.TopRightPiece };
+
+        public Corner FrontTopRightCorner => new() { FirstPiece = FrontFace.TopRightPiece, SecondPiece = TopFace.BottomRightPiece, ThirdPiece = RightFace.TopLeftPiece };
+
+        public Corner FrontBottomLeftCorner => new() { FirstPiece = FrontFace.BottomLeftPiece, SecondPiece = BottomFace.TopLeftPiece, ThirdPiece = LeftFace.BottomRightPiece };
+
+        public Corner FrontBottomRightCorner => new() { FirstPiece = FrontFace.BottomRightPiece, SecondPiece = BottomFace.TopRightPiece, ThirdPiece = RightFace.BottomLeftPiece };
+
+        public Corner BackTopLeftCorner => new() { FirstPiece = BackFace.TopRightPiece, SecondPiece = TopFace.TopLeftPiece, ThirdPiece = LeftFace.TopLeftPiece };
+
+        public Corner BackTopRightCorner => new() { FirstPiece = BackFace.TopLeftPiece, SecondPiece = TopFace.TopRightPiece, ThirdPiece = RightFace.TopRightPiece };
+
+        public Corner BackBottomLeftCorner => new() { FirstPiece = BackFace.BottomRightPiece, SecondPiece = BottomFace.BottomLeftPiece, ThirdPiece = LeftFace.BottomLeftPiece };
+
+        public Corner BackBottomRightCorner => new() { FirstPiece = BackFace.BottomLeftPiece, SecondPiece = BottomFace.BottomRightPiece, ThirdPiece = RightFace.BottomRightPiece };
 
         public RubikCube()
         {
@@ -59,13 +115,6 @@ namespace RubikCubeSolverApp.Models
         private void RubikCube_PieceChanged(Face face, Piece piece)
         {
             FacePieceChanged?.Invoke(face, piece);
-        }
-
-        private void SetFace(FaceType faceType, Face face)
-        {
-            face.Type = faceType;
-            faces[(int)faceType] = face;
-            FaceChanged?.Invoke(face);
         }
 
         private Face GetFace(FaceType faceType)
@@ -294,15 +343,9 @@ namespace RubikCubeSolverApp.Models
 
         public void X()
         {
-            Face top = TopFace;
-            Face back = BackFace;
-            Face bottom = BottomFace;
-            Face front = FrontFace;
-
-            SetFace(FaceType.Top, front);
-            SetFace(FaceType.Back, top);
-            SetFace(FaceType.Bottom, back);
-            SetFace(FaceType.Front, bottom);
+            TurnXLayerClockwise(XLayer.Left);
+            TurnXLayerClockwise(XLayer.Middle);
+            TurnXLayerClockwise(XLayer.Right);
 
             LeftFace.TurnCounterClockwise();
             RightFace.TurnClockwise();
@@ -312,15 +355,9 @@ namespace RubikCubeSolverApp.Models
 
         public void XI()
         {
-            Face top = TopFace;
-            Face back = BackFace;
-            Face bottom = BottomFace;
-            Face front = FrontFace;
-
-            SetFace(FaceType.Top, back);
-            SetFace(FaceType.Back, bottom);
-            SetFace(FaceType.Bottom, front);
-            SetFace(FaceType.Front, top);
+            TurnXLayerCounterClockwise(XLayer.Left);
+            TurnXLayerCounterClockwise(XLayer.Middle);
+            TurnXLayerCounterClockwise(XLayer.Right);
 
             LeftFace.TurnClockwise();
             RightFace.TurnCounterClockwise();
@@ -330,15 +367,9 @@ namespace RubikCubeSolverApp.Models
 
         public void Y()
         {
-            Face left = LeftFace;
-            Face back = BackFace;
-            Face right = RightFace;
-            Face front = FrontFace;
-
-            SetFace(FaceType.Left, front);
-            SetFace(FaceType.Back, left);
-            SetFace(FaceType.Right, back);
-            SetFace(FaceType.Front, right);
+            TurnYLayerClockwise(YLayer.Bottom);
+            TurnYLayerClockwise(YLayer.Middle);
+            TurnYLayerClockwise(YLayer.Top);
 
             TopFace.TurnClockwise();
             BottomFace.TurnCounterClockwise();
@@ -348,30 +379,21 @@ namespace RubikCubeSolverApp.Models
 
         public void YI()
         {
-            Face left = LeftFace;
-            Face back = BackFace;
-            Face right = RightFace;
-            Face front = FrontFace;
+            TurnYLayerCounterClockwise(YLayer.Bottom);
+            TurnYLayerCounterClockwise(YLayer.Middle);
+            TurnYLayerCounterClockwise(YLayer.Top);
 
-            SetFace(FaceType.Left, back);
-            SetFace(FaceType.Back, right);
-            SetFace(FaceType.Right, front);
-            SetFace(FaceType.Front, left);
+            TopFace.TurnCounterClockwise();
+            BottomFace.TurnClockwise();
 
             operationHistory.Push(OperationType.YI);
         }
 
         public void Z()
         {
-            Face left = LeftFace;
-            Face top = TopFace;
-            Face right = RightFace;
-            Face bottom = BottomFace;
-
-            SetFace(FaceType.Left, bottom);
-            SetFace(FaceType.Top, left);
-            SetFace(FaceType.Right, top);
-            SetFace(FaceType.Bottom, right);
+            TurnZLayerClockwise(ZLayer.Front);
+            TurnZLayerClockwise(ZLayer.Middle);
+            TurnZLayerClockwise(ZLayer.Back);
 
             FrontFace.TurnClockwise();
             BackFace.TurnCounterClockwise();
@@ -381,15 +403,9 @@ namespace RubikCubeSolverApp.Models
 
         public void ZI()
         {
-            Face left = LeftFace;
-            Face top = TopFace;
-            Face right = RightFace;
-            Face bottom = BottomFace;
-
-            SetFace(FaceType.Left, top);
-            SetFace(FaceType.Top, right);
-            SetFace(FaceType.Right, bottom);
-            SetFace(FaceType.Bottom, left);
+            TurnZLayerCounterClockwise(ZLayer.Front);
+            TurnZLayerCounterClockwise(ZLayer.Middle);
+            TurnZLayerCounterClockwise(ZLayer.Back);
 
             FrontFace.TurnCounterClockwise();
             BackFace.TurnClockwise();
@@ -421,6 +437,16 @@ namespace RubikCubeSolverApp.Models
         public void Set(int face, int piece, ColorType colorType)
         {
             faces[face].Pieces[piece].ColorType = colorType;
+        }
+
+        public bool IsSolved()
+        {
+            return faces.All(face => face.Pieces.All(piece => piece.ColorType == face.MiddlePiece.ColorType));
+        }
+
+        public void MakeOperation(OperationType type)
+        {
+            operations[(int)type]();
         }
     }
 }
