@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 using RubikCubeSolverApp.Enums;
@@ -14,13 +16,13 @@ using RubikCubeSolverApp.Utility;
 
 namespace RubikCubeSolverApp.ViewModels
 {
-    internal class MainViewModel : IDisposable
+    internal class MainViewModel : ObservableObject, IDisposable
     {
-        private readonly RubikCube rubikCube = new();
-
-        private readonly IRubikCubeSolver rubikSolver = new RubikCubeSolver();
+        private readonly RubikCube2 rubikCube = new();
 
         private readonly AutoResetEvent resumeEvent = new(false);
+
+        private readonly IRubikCubeFileManager rubikCubeFileManager = new RubikCubeFileManager();
 
         private Task? stepSolve;
 
@@ -84,6 +86,18 @@ namespace RubikCubeSolverApp.ViewModels
 
         public IRelayCommand ZICommand { get; }
 
+        public IRelayCommand SolveFirstPhaseCommand { get; }
+
+        public IRelayCommand SolveSecondPhaseCommand { get; }
+
+        public IRelayCommand SolveThirdPhaseCommand { get; }
+
+        public IRelayCommand SolveFourthPhaseCommand { get; }
+
+        public IRelayCommand SaveCommand { get; }
+
+        public IRelayCommand LoadCommand { get; }
+
         public MainViewModel()
         {
             for (int m = 0; m < RubikCube.FaceCount; ++m)
@@ -92,39 +106,40 @@ namespace RubikCubeSolverApp.ViewModels
                 {
                     ObservableValue<ColorType> observableValue = new() { Value = (ColorType)m };
 
-                    observableValue.PropertyChanged += CreateHandler(m, n, observableValue);
-
                     ColorTypes[m * Face.PieceCount + n] = observableValue;
                 }
             }
 
-            rubikCube.FacePieceChanged += RubikCube_ColorTypeChanged;
+            rubikCube.PieceChanged += RubikCube_PieceChanged;
 
             RandomCommand = new RelayCommand(rubikCube.Randomize);
             ResetCommand = new RelayCommand(rubikCube.Reset);
             UndoCommand = new RelayCommand(rubikCube.Undo);
-            SolveCommand = new RelayCommand(() =>
-            {
-                List<OperationType> operations = rubikSolver.Solve(rubikCube);
-                Debug.WriteLine($"{operations.Count} operations: " + string.Join(',', operations));
-            });
+            SolveCommand = new RelayCommand(() => RubikCubeSolver2.Solve(rubikCube));
             StepCommand = new RelayCommand(() =>
             {
-                if (stepSolve?.IsCompleted ?? false)
-                {
-                    stepSolve.Dispose();
-                    stepSolve = null;
-                }
+                //if (stepSolve?.IsCompleted ?? false)
+                //{
+                //    stepSolve.Dispose();
+                //    stepSolve = null;
+                //}
 
-                if (stepSolve is null)
-                {
-                    stepSolve = Task.Factory.StartNew(() => rubikSolver.Solve(rubikCube, resumeEvent), TaskCreationOptions.LongRunning);
-                }
-                else
-                {
-                    resumeEvent.Set();
-                }
+                //if (stepSolve is null)
+                //{
+                //    stepSolve = Task.Factory.StartNew(() => rubikSolver.Solve(rubikCube, resumeEvent), TaskCreationOptions.LongRunning);
+                //}
+                //else
+                //{
+                //    resumeEvent.Set();
+                //}
             });
+            //SaveCommand = new RelayCommand(() => rubikCubeFileManager.Save(rubikCube));
+            //LoadCommand = new RelayCommand(() => rubikCubeFileManager.Load(rubikCube));
+
+            SolveFirstPhaseCommand = new RelayCommand(() => RubikCubeSolver2.SolveG0(rubikCube));
+            SolveSecondPhaseCommand = new RelayCommand(() => RubikCubeSolver2.SolveG1(rubikCube));
+            SolveThirdPhaseCommand = new RelayCommand(() => RubikCubeSolver2.SolveG2(rubikCube));
+            SolveFourthPhaseCommand = new RelayCommand(() => RubikCubeSolver2.SolveG3(rubikCube));
 
             UCommand = new RelayCommand(rubikCube.U);
             UICommand = new RelayCommand(rubikCube.UI);
@@ -167,14 +182,9 @@ namespace RubikCubeSolverApp.ViewModels
             }
         }
 
-        private PropertyChangedEventHandler CreateHandler(int m, int n, ObservableValue<ColorType> observableValue)
+        private void RubikCube_PieceChanged(int piece, char value)
         {
-            return (s, e) => rubikCube.Set(m, n, observableValue.Value);
-        }
-
-        private void RubikCube_ColorTypeChanged(Face face, Piece piece)
-        {
-            ColorTypes[(int)face.Type * Face.PieceCount + (int)piece.Type].Value = piece.ColorType;
+            ColorTypes[piece].Value = (ColorType)(value - '0');
         }
 
         public void Dispose()

@@ -24,5 +24,10 @@ namespace RubikCubeSolverApp.Models
         {
             return FirstPiece.ColorType == first && SecondPiece.ColorType == second;
         }
+
+        public bool HasColorType(ColorType color)
+        {
+            return FirstPiece.ColorType == color || SecondPiece.ColorType == color;
+        }
     }
 }

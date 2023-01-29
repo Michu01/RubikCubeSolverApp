@@ -150,7 +150,7 @@ namespace RubikCubeSolverApp.Models
             PieceChanged?.Invoke(this, piece);
         }
 
-        private void SetValue(PieceType pieceType, ColorType value)
+        public void SetValue(PieceType pieceType, ColorType value)
         {
             SetValue(Pieces[(int)pieceType], value);
         }

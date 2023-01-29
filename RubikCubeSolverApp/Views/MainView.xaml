@@ -16,34 +16,14 @@
             <Button Height="40" Width="120" FontSize="20" Command="{Binding UndoCommand}">Undo</Button>
             <Button Height="40" Width="120" FontSize="20" Command="{Binding SolveCommand}">Solve</Button>
             <Button Height="40" Width="120" FontSize="20" Command="{Binding StepCommand}">Step</Button>
+            <Button Height="40" Width="120" FontSize="20" Command="{Binding SaveCommand}">Save</Button>
+            <Button Height="40" Width="120" FontSize="20" Command="{Binding LoadCommand}">Load</Button>
         </StackPanel>
         <StackPanel Orientation="Horizontal">
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding FCommand}">F</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding SCommand}">S</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding BCommand}">B</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding LCommand}">L</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding MCommand}">M</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding RCommand}">R</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding UCommand}">U</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding ECommand}">E</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding DCommand}">D</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding XCommand}">X</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding YCommand}">Y</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding ZCommand}">Z</Button>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding FICommand}">F'</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding SICommand}">S'</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding BICommand}">B'</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding LICommand}">L'</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding MICommand}">M'</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding RICommand}">R'</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding UICommand}">U'</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding EICommand}">E'</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding DICommand}">D'</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding XICommand}">X'</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding YICommand}">Y'</Button>
-            <Button Height="40" Width="40" FontSize="20" Command="{Binding ZICommand}">Z'</Button>
+            <Button Height="40" Width="120" FontSize="20" Command="{Binding SolveFirstPhaseCommand}">S1P</Button>
+            <Button Height="40" Width="120" FontSize="20" Command="{Binding SolveSecondPhaseCommand}">S2P</Button>
+            <Button Height="40" Width="120" FontSize="20" Command="{Binding SolveThirdPhaseCommand}">S3P</Button>
+            <Button Height="40" Width="120" FontSize="20" Command="{Binding SolveFourthPhaseCommand}">S4P</Button>
         </StackPanel>
         <Grid>
             <Grid.RowDefinitions>
@@ -150,5 +130,33 @@
             <local:RubikFieldControl Grid.Row="8" Grid.Column="4" SelectedValue="{Binding ColorTypes[52].Value}"/>
             <local:RubikFieldControl Grid.Row="8" Grid.Column="5" SelectedValue="{Binding ColorTypes[53].Value}"/>
         </Grid>
+        <StackPanel Orientation="Horizontal">
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding FCommand}">F</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding SCommand}">S</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding BCommand}">B</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding LCommand}">L</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding MCommand}">M</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding RCommand}">R</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding UCommand}">U</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding ECommand}">E</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding DCommand}">D</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding XCommand}">X</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding YCommand}">Y</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding ZCommand}">Z</Button>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding FICommand}">F'</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding SICommand}">S'</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding BICommand}">B'</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding LICommand}">L'</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding MICommand}">M'</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding RICommand}">R'</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding UICommand}">U'</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding EICommand}">E'</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding DICommand}">D'</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding XICommand}">X'</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding YICommand}">Y'</Button>
+            <Button Height="40" Width="40" FontSize="20" Command="{Binding ZICommand}">Z'</Button>
+        </StackPanel>
     </StackPanel>
 </Page>

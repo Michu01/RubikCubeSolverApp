@@ -18,9 +18,15 @@ namespace RubikCubeSolverApp.Models
 
         private readonly Action[] operations;
 
-        private readonly Face[] faces = new Face[FaceCount];
-
         private readonly Stack<OperationType> operationHistory = new();
+
+        public Face[] Faces { get; } = new Face[FaceCount];
+
+        public IEnumerable<Piece> Pieces => Faces.Select(f => f.Pieces).SelectMany(p => p);
+
+        public IEnumerable<Piece> EdgePieces => Faces.Select(f => f.EdgePieces).SelectMany(p => p);
+
+        public IEnumerable<Piece> CornerPieces => Faces.Select(f => f.CornerPieces).SelectMany(p => p);
 
         public Face TopFace => GetFace(FaceType.Top);
 
@@ -60,9 +66,9 @@ namespace RubikCubeSolverApp.Models
 
         public Edge FrontBottomEdge => new() { FirstPiece = FrontFace.BottomPiece, SecondPiece = BottomFace.TopPiece };
 
-        public Edge BackLeftEdge => new() { FirstPiece = BackFace.LeftPiece, SecondPiece = RightFace.RightPiece };
+        public Edge BackLeftEdge => new() { FirstPiece = BackFace.RightPiece, SecondPiece = LeftFace.LeftPiece };
 
-        public Edge BackRightEdge => new() { FirstPiece = BackFace.RightPiece, SecondPiece = LeftFace.LeftPiece };
+        public Edge BackRightEdge => new() { FirstPiece = BackFace.LeftPiece, SecondPiece = RightFace.RightPiece };
 
         public Edge BackTopEdge => new() { FirstPiece = BackFace.TopPiece, SecondPiece = TopFace.TopPiece };
 
@@ -96,20 +102,56 @@ namespace RubikCubeSolverApp.Models
         {
             foreach (int n in Enumerable.Range(0, FaceCount))
             {
-                faces[n] = new()
+                Faces[n] = new()
                 {
                     Type = (FaceType)n
                 };
 
-                faces[n].PieceChanged += RubikCube_PieceChanged;
+                Faces[n].PieceChanged += RubikCube_PieceChanged;
             }
 
             operations = new Action[]
             {
-                U, UI, E, EI, D, DI, F, FI, S, SI, B, BI, L, LI, M, MI, R, RI, X, XI, Y, YI, Z, ZI
+                U, U2, UI, E, EI, D, D2, DI, F, F2, FI, S, SI, B, B2, BI, L, L2, LI, M, MI, R, R2, RI, X, XI, Y, YI, Z, ZI
             };
 
             Reset();
+        }
+
+        public RubikCube(string s)
+            : this()
+        {
+            for (int i = 0; i != FaceCount; ++i)
+            {
+                for (int j = 0; j != Face.PieceCount; ++j)
+                {
+                    Faces[i].Pieces[j].ColorType = (ColorType)(s[i * Face.PieceCount + j] - '0');
+                }
+            }
+        }
+
+        public RubikCube(IList<string> faces)
+            : this()
+        {
+            for (int i = 0; i != FaceCount; ++i)
+            {
+                for (int j = 0; j != Face.PieceCount; ++j)
+                {
+                    Faces[i].Pieces[j].ColorType = (ColorType)(faces[i][j] - '0');
+                }
+            }
+        }
+
+        public RubikCube(RubikCube cube)
+            : this()
+        {
+            foreach (int i in Enumerable.Range(0, FaceCount))
+            {
+                foreach (int j in Enumerable.Range(0, Face.PieceCount))
+                {
+                    Faces[i].Pieces[j].ColorType = cube.Faces[i].Pieces[j].ColorType;
+                }
+            }
         }
 
         private void RubikCube_PieceChanged(Face face, Piece piece)
@@ -119,7 +161,7 @@ namespace RubikCubeSolverApp.Models
 
         private Face GetFace(FaceType faceType)
         {
-            return faces[(int)faceType];
+            return Faces[(int)faceType];
         }
 
         private void TurnXLayerClockwise(XLayer layer)
@@ -213,7 +255,7 @@ namespace RubikCubeSolverApp.Models
 
         public void Reset()
         {
-            foreach (Face face in faces)
+            foreach (Face face in Faces)
             {
                 face.Reset();
             }
@@ -226,6 +268,15 @@ namespace RubikCubeSolverApp.Models
             TopFace.TurnClockwise();
             TurnYLayerClockwise(YLayer.Top);
             operationHistory.Push(OperationType.U);
+        }
+
+        public void U2()
+        {
+            TopFace.TurnClockwise();
+            TurnYLayerClockwise(YLayer.Top);
+            TopFace.TurnClockwise();
+            TurnYLayerClockwise(YLayer.Top);
+            operationHistory.Push(OperationType.U2);
         }
 
         public void UI()
@@ -254,6 +305,15 @@ namespace RubikCubeSolverApp.Models
             operationHistory.Push(OperationType.D);
         }
 
+        public void D2()
+        {
+            BottomFace.TurnClockwise();
+            TurnYLayerCounterClockwise(YLayer.Bottom);
+            BottomFace.TurnClockwise();
+            TurnYLayerCounterClockwise(YLayer.Bottom);
+            operationHistory.Push(OperationType.D2);
+        }
+
         public void DI()
         {
             BottomFace.TurnCounterClockwise();
@@ -266,6 +326,15 @@ namespace RubikCubeSolverApp.Models
             GetFace(FaceType.Front).TurnClockwise();
             TurnZLayerClockwise(ZLayer.Front);
             operationHistory.Push(OperationType.F);
+        }
+
+        public void F2()
+        {
+            GetFace(FaceType.Front).TurnClockwise();
+            TurnZLayerClockwise(ZLayer.Front);
+            GetFace(FaceType.Front).TurnClockwise();
+            TurnZLayerClockwise(ZLayer.Front);
+            operationHistory.Push(OperationType.F2);
         }
 
         public void FI()
@@ -294,6 +363,15 @@ namespace RubikCubeSolverApp.Models
             operationHistory.Push(OperationType.B);
         }
 
+        public void B2()
+        {
+            GetFace(FaceType.Back).TurnClockwise();
+            TurnZLayerCounterClockwise(ZLayer.Back);
+            GetFace(FaceType.Back).TurnClockwise();
+            TurnZLayerCounterClockwise(ZLayer.Back);
+            operationHistory.Push(OperationType.B2);
+        }
+
         public void BI()
         {
             GetFace(FaceType.Back).TurnCounterClockwise();
@@ -306,6 +384,15 @@ namespace RubikCubeSolverApp.Models
             LeftFace.TurnClockwise();
             TurnXLayerCounterClockwise(XLayer.Left);
             operationHistory.Push(OperationType.L);
+        }
+
+        public void L2()
+        {
+            LeftFace.TurnClockwise();
+            TurnXLayerCounterClockwise(XLayer.Left);
+            LeftFace.TurnClockwise();
+            TurnXLayerCounterClockwise(XLayer.Left);
+            operationHistory.Push(OperationType.L2);
         }
 
         public void LI()
@@ -332,6 +419,15 @@ namespace RubikCubeSolverApp.Models
             RightFace.TurnClockwise();
             TurnXLayerClockwise(XLayer.Right);
             operationHistory.Push(OperationType.R);
+        }
+
+        public void R2()
+        {
+            RightFace.TurnClockwise();
+            TurnXLayerClockwise(XLayer.Right); 
+            RightFace.TurnClockwise();
+            TurnXLayerClockwise(XLayer.Right);
+            operationHistory.Push(OperationType.R2);
         }
 
         public void RI()
@@ -415,7 +511,7 @@ namespace RubikCubeSolverApp.Models
 
         public void Print()
         {
-            foreach (Face face in faces)
+            foreach (Face face in Faces)
             {
                 Debug.WriteLine($"${face.Type}");
                 face.Print();
@@ -436,17 +532,42 @@ namespace RubikCubeSolverApp.Models
 
         public void Set(int face, int piece, ColorType colorType)
         {
-            faces[face].Pieces[piece].ColorType = colorType;
+            Faces[face].Pieces[piece].ColorType = colorType;
+        }
+
+        public void Update(string s)
+        {
+            foreach (int i in Enumerable.Range(0, FaceCount))
+            {
+                foreach (int j in Enumerable.Range(0, Face.PieceCount))
+                {
+                    ColorType colorType = (ColorType)(s[i * Face.PieceCount + j] - '0');
+
+                    Faces[i].SetValue((PieceType)j, colorType); 
+                }
+            }
         }
 
         public bool IsSolved()
         {
-            return faces.All(face => face.Pieces.All(piece => piece.ColorType == face.MiddlePiece.ColorType));
+            return Faces.All(face => face.Pieces.All(piece => piece.ColorType == face.MiddlePiece.ColorType));
         }
 
         public void MakeOperation(OperationType type)
         {
             operations[(int)type]();
+        }
+
+        public override string ToString()
+        {
+            StringBuilder stringBuilder = new(54);
+
+            foreach (Piece piece in Pieces)
+            {
+                stringBuilder.Append((byte)piece.ColorType);
+            }
+
+            return stringBuilder.ToString();
         }
     }
 }

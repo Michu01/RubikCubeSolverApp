@@ -8,6 +8,6 @@ namespace RubikCubeSolverApp.Enums
 {
     public enum OperationType
     {
-        U, UI, E, EI, D, DI, F, FI, S, SI, B, BI, L, LI, M, MI, R, RI, X, XI, Y, YI, Z, ZI
+        U, U2, UI, E, EI, D, D2, DI, F, F2, FI, S, SI, B, B2, BI, L, L2, LI, M, MI, R, R2, RI, X, XI, Y, YI, Z, ZI
     }
 }
